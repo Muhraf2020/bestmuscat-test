@@ -1095,3 +1095,17 @@ img.logo {
     top: 50px;
   }
 }
+
+/* Layout for the Best Things buttons row */
+.best-things .tabs {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Keep the “See All →” link pushed to the right */
+.best-things .tabs .see-all {
+  margin-left: auto;
+}
