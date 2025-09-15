@@ -91,54 +91,162 @@
         return;
       }
 
-      const logo = tool.logo ? `<img class="logo" src="${esc(tool.logo)}" alt="${esc(tool.name)} logo" loading="lazy" />`
-                             : `<div class="logo" aria-hidden="true">${esc((tool.name||"").split(/\s+/).slice(0,2).map(p=>p[0]).join("").toUpperCase()||"AI")}</div>`;
+      // Build detailed header section
+      const badgeHTML = (tool.badges || []).map(b => `<span class="badge highlight">${esc(b)}</span>`).join(" ");
+      const ratingChip = tool.rating_overall ? `<span class="rating-chip">${esc(tool.rating_overall.toFixed(2))}</span>` : '';
+      const addressLine = tool.address_full ? `<p class="address">${esc(tool.address_full)}</p>` : '';
+      // Meta pills: status, busyness, price and first cuisine
+      const metaPills = [];
+      if (tool.status) metaPills.push(`<span class="pill status-${tool.status.toLowerCase()}">${esc(tool.status)}</span>`);
+      if (tool.busyness) metaPills.push(`<span class="pill">${esc(tool.busyness)}</span>`);
+      if (tool.price) metaPills.push(`<span class="pill">${esc(tool.price)}</span>`);
+      if (tool.cuisines && tool.cuisines.length) metaPills.push(`<span class="pill">${esc(tool.cuisines.join(', '))}</span>`);
+      // Action buttons
+      const actions = [];
+      // Share button always present
+      actions.push(`<button class="btn share" id="share-link">Share Link</button>`);
+      // Visit website
+      if (tool.actions && tool.actions.website) actions.push(`<a class="btn primary" href="${esc(tool.actions.website)}" target="_blank" rel="noopener">Visit</a>`);
+      // Call
+      if (tool.actions && tool.actions.phone) actions.push(`<a class="btn" href="tel:${esc(tool.actions.phone)}">Call</a>`);
+      // Go (maps)
+      if (tool.actions && tool.actions.maps_url) actions.push(`<a class="btn" href="${esc(tool.actions.maps_url)}" target="_blank" rel="noopener">Go</a>`);
+      const headerHTML = `
+        <div class="detail-header">
+          <div class="badges">${badgeHTML}</div>
+          <h1>${esc(tool.name)}</h1>
+          ${ratingChip}
+          ${addressLine}
+          <div class="meta-pills">${metaPills.join(' ')}</div>
+          <div class="actions">${actions.join(' ')}</div>
+        </div>
+      `;
 
-      const cats = (tool.categories||[]).map(c=>`<span class="badge">${esc(c)}</span>`).join(" ");
-      const tags = (tool.tags||[]).map(c=>`<span class="tag">${esc(c)}</span>`).join(" ");
-      const icons = iconRow(tool);
+      // Sticky sub‑navigation
+      const navLinks = [];
+      if (tool.subscores) navLinks.push('<a href="#rating">Rating</a>');
+      if (tool.hours) navLinks.push('<a href="#hours">Opening Hours</a>');
+      if (tool.location) navLinks.push('<a href="#location">Location</a>');
+      if (tool.faqs && tool.faqs.length) navLinks.push('<a href="#faqs">FAQs</a>');
+      const navHTML = navLinks.length ? `<nav class="sticky-nav"><ul>${navLinks.map(l=>`<li>${l}</li>`).join('')}</ul></nav>` : '';
 
-      // Related: same first category
+      // Hero image (use logo as fallback)
+      const heroHTML = tool.logo ? `<img class="hero-img" src="${esc(tool.logo)}" alt="${esc(tool.name)}">` : '';
+
+      // About section
+      const aboutHTML = tool.about && tool.about.length ? `<section id="about" class="section"><h2>About</h2>${tool.about.map(p => `<p>${esc(p)}</p>`).join('')}</section>` : '';
+
+      // Rating & methodology section
+      let ratingSection = '';
+      if (tool.subscores) {
+        const subs = Object.keys(tool.subscores).map(key => `<span class="subscore">${esc(key)} ${esc(tool.subscores[key].toFixed(2))}</span>`).join(' ');
+        ratingSection = `<section id="rating" class="section"><h2>Rating</h2>
+          ${tool.verified ? '<p><strong>bestMuscat Verified</strong></p>' : ''}
+          <p style="font-size:2rem; font-weight:700; margin:0 0 6px;">${esc(tool.rating_overall.toFixed(2))}<small>/10</small></p>
+          <p>${esc(tool.methodology_note || '')}</p>
+          <div class="subscores">${subs}</div>
+        </section>`;
+      }
+
+      // Public sentiment card
+      let sentimentHTML = '';
+      if (tool.public_sentiment) {
+        sentimentHTML = `<div class="card-block"><h3>Public Review Sentiment</h3>
+          <p>Based on ${esc(String(tool.public_sentiment.count))} ${esc(tool.public_sentiment.source)}</p>
+          <p>${esc(tool.public_sentiment.summary || '')}</p>
+          <p style="font-size:0.8rem; color:#777;">Last updated ${esc(tool.public_sentiment.last_updated)}</p>
+        </div>`;
+      }
+
+      // Best times card
+      let bestTimesHTML = '';
+      if (tool.best_times && tool.best_times.length) {
+        const chips = tool.best_times.map(bt => `<span class="chip">${esc(bt.label)} — ${esc(bt.window)}</span>`).join(' ');
+        bestTimesHTML = `<div class="card-block"><h3>Best Times to Visit</h3>
+          <p>${esc(tool.best_times_note || '')}</p>
+          <div class="card-chips">${chips}</div>
+        </div>`;
+      }
+
+      // Attributes grid
+      let attributesHTML = '';
+      if (tool.attributes) {
+        const att = tool.attributes;
+        const leftGroups = [];
+        function tagGroup(label, arr) {
+          if (!arr || !arr.length) return '';
+          return `<div class="tag-group"><span class="label">${esc(label)}:</span><div class="tags">${arr.map(t => `<span class="tag">${esc(t)}</span>`).join(' ')}</div></div>`;
+        }
+        leftGroups.push(tagGroup('Category', att.category));
+        leftGroups.push(tagGroup('Cuisine', att.cuisine));
+        leftGroups.push(tagGroup('Meals', att.meals));
+        leftGroups.push(tagGroup('Dishes', att.dishes));
+        leftGroups.push(tagGroup('Amenities', att.amenities));
+        leftGroups.push(tagGroup('Seating', att.seating));
+        const leftHTML = leftGroups.filter(Boolean).join('');
+        // Right table
+        const rows = [];
+        if (att.price_range && att.price_range.symbol) rows.push(`<tr><td>Price Range</td><td>${esc(att.price_range.symbol)} ${esc(att.price_range.approx_aed||'')}</td></tr>`);
+        const rightHTML = `<table>${rows.join('')}</table>`;
+        attributesHTML = `<section id="attributes" class="section"><h2>Details</h2><div class="attributes"><div class="attr-left">${leftHTML}</div><div class="attr-right">${rightHTML}</div></div></section>`;
+      }
+
+      // Opening hours section
+      let hoursHTML = '';
+      if (tool.hours) {
+        const rows = Object.keys(tool.hours).map(day => `<tr><td>${esc(day)}</td><td>${esc(tool.hours[day][0])}</td><td>${esc(tool.hours[day][1])}</td></tr>`).join('');
+        hoursHTML = `<section id="hours" class="section"><h2>${esc(tool.name)} Opening Hours</h2><table class="hours-table"><tr><th>Day</th><th>Opening</th><th>Closing</th></tr>${rows}</table></section>`;
+      }
+
+      // Location section
+      let locationHTML = '';
+      if (tool.location) {
+        const loc = tool.location;
+        const mapEmbed = loc.map_embed ? `<div class="map-embed">${loc.map_embed}</div>` : '';
+        const websiteRow = loc.website ? `<p><a href="${esc(loc.website)}" target="_blank" rel="noopener">Website ↗</a></p>` : '';
+        const phoneRow = loc.phone ? `<p><a href="tel:${esc(loc.phone)}">Call</a></p>` : '';
+        const directionsRow = tool.actions && tool.actions.maps_url ? `<p><a href="${esc(tool.actions.maps_url)}" target="_blank" rel="noopener">Get Directions ↗</a></p>` : '';
+        locationHTML = `<section id="location" class="section"><h2>Location</h2>${mapEmbed}<p><strong>Neighbourhood:</strong> ${esc(loc.neighborhood)}</p><p><strong>Address:</strong> ${esc(loc.address)}</p>${websiteRow}${phoneRow}${directionsRow}</section>`;
+      }
+
+      // FAQs section
+      let faqsHTML = '';
+      if (tool.faqs && tool.faqs.length) {
+        const items = tool.faqs.map(f => `<div class="faq-item"><p class="q">${esc(f.q)}</p><p class="a">${esc(f.a)}</p></div>`).join('');
+        faqsHTML = `<section id="faqs" class="section"><h2>FAQs</h2><div class="faqs">${items}</div></section>`;
+      }
+
+      // Related places (same as before)
       let related = tools.filter(t => t.slug !== tool.slug && (t.categories||[])[0] === (tool.categories||[])[0]).slice(0,6);
       const relHTML = related.map(t => `
         <article class="card">
-          ${t.logo ? `<img class="logo" src="${esc(t.logo)}" alt="${esc(t.name)} logo" loading="lazy" />` : `<div class="logo">${esc((t.name||"").split(/\s+/).slice(0,2).map(p=>p[0]).join("").toUpperCase())}</div>`}
+          ${t.logo ? `<img class="logo" src="${esc(t.logo)}" alt="${esc(t.name)} logo" loading="lazy" />` : `<div class="logo">${esc((t.name||'').split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase())}</div>`}
           <div style="flex:1">
             <div class="title">
               <h3 style="margin:0;font-size:1rem">${esc(t.name)}</h3>
               <span class="right">${pricingBadge(t.pricing)}</span>
             </div>
-            <p style="margin:6px 0 8px; color:#333">${esc(t.tagline || (t.description||"").slice(0,120))}</p>
-            <div class="badges">${(t.categories||[]).slice(0,2).map(c=>`<span class="badge">${esc(c)}</span>`).join(" ")}</div>
+            <p style="margin:6px 0 8px; color:#333">${esc(t.tagline || (t.description||'').slice(0,120))}</p>
+            <div class="badges">${(t.categories||[]).slice(0,2).map(c=>`<span class="badge">${esc(c)}</span>`).join(' ')}</div>
           </div>
           <div class="cta"><a href="tool.html?slug=${encodeURIComponent(t.slug)}">View</a></div>
         </article>
-      `).join("");
+      `).join('');
+      const relatedSection = `<hr class="sep" /><section><h2 style="font-size:1.1rem">Related places</h2><div class="related">${relHTML || '<div class="empty">No related places found.</div>'}</div></section>`;
 
-      wrap.innerHTML = `
-        <article class="tool-hero">
-          ${logo}
-          <div style="flex:1">
-            <h1 style="margin:0 0 6px">${esc(tool.name)}</h1>
-            <div class="title">
-              ${icons}
-              <span class="right">${pricingBadge(tool.pricing)}</span>
-            </div>
-            <p class="lead" style="margin:6px 0 10px">${esc(tool.tagline)}</p>
-            <p style="margin:0 0 10px">${esc(tool.description)}</p>
-            <div class="badges">${cats}</div>
-            <div class="tags" style="margin-top:10px">${tags}</div>
-            <p style="margin-top:12px">
-              <a class="cta" style="padding:10px 12px; border-radius:8px; background:#0b57d0; color:#fff; text-decoration:none; font-weight:700" href="${esc(tool.url)}" target="_blank" rel="noopener">Visit website ↗</a>
-            </p>
-          </div>
-        </article>
-        <hr class="sep" />
-        <section>
-          <h2 style="font-size:1.1rem">Related places</h2>
-          <div class="related">${relHTML || '<div class="empty">No related places found.</div>'}</div>
-        </section>
-      `;
+      wrap.innerHTML = headerHTML + navHTML + heroHTML + aboutHTML + ratingSection + sentimentHTML + bestTimesHTML + attributesHTML + hoursHTML + locationHTML + faqsHTML + relatedSection;
+
+      // Share button functionality
+      const shareBtn = document.getElementById('share-link');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            const orig = shareBtn.textContent;
+            shareBtn.textContent = 'Copied!';
+            setTimeout(() => { shareBtn.textContent = orig; }, 2000);
+          });
+        });
+      }
 
     })();
   </script>

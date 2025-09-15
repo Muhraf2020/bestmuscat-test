@@ -852,3 +852,246 @@ img.logo {
 .topics { margin: 24px 0 8px; }
 .topics .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .topics-list { display:flex; flex-wrap:wrap; gap:10px; }
+
+/* =========================================
+   Detail page enhancements
+   These styles support the rich detail page layout for individual places.
+   ========================================= */
+.detail-header {
+  margin-bottom: 16px;
+}
+.detail-header .badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.badge.highlight {
+  background: #ffecd6;
+  color: #bf5100;
+  font-weight: 600;
+}
+.rating-chip {
+  display: inline-block;
+  background: #1d8a4a;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin-left: 8px;
+  font-size: 0.95rem;
+}
+.address {
+  margin: 4px 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+.meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+.pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #f2f4f7;
+  color: #333;
+}
+.pill.status-open {
+  background: #e5f5e9;
+  color: #1d8a4a;
+}
+.pill.status-closed {
+  background: #fdecea;
+  color: #c23c3e;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.actions .btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  color: #0b2a57;
+  transition: background .15s ease;
+}
+.actions .btn.primary {
+  background: #0b2a57;
+  color: #fff;
+  border-color: #0b2a57;
+}
+.actions .btn:hover {
+  background: #e8eef6;
+}
+.actions .btn.primary:hover {
+  background: #174a8b;
+}
+
+.sticky-nav {
+  position: sticky;
+  top: 60px;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 16px;
+}
+.sticky-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 8px 0;
+}
+.sticky-nav li a {
+  color: #0b2a57;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.sticky-nav li a:hover {
+  text-decoration: underline;
+}
+
+.hero-img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+.section h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.subscores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.subscore {
+  display: inline-block;
+  background: #eef2f7;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: #243447;
+}
+
+.card-block {
+  background: #f9fafc;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.card-block h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+}
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.card-chips .chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef2f7;
+  font-size: 0.8rem;
+  color: #0b2a57;
+}
+
+.attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.attr-left {
+  flex: 2;
+}
+.attr-right {
+  flex: 1;
+}
+.tag-group {
+  margin-bottom: 8px;
+}
+.tag-group .label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+.tag-group .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag-group .tag {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.hours-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.hours-table th,
+.hours-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+.hours-table th {
+  font-weight: 600;
+}
+.map-embed {
+  margin-bottom: 12px;
+}
+.faqs {
+  margin-top: 12px;
+}
+.faq-item {
+  margin-bottom: 12px;
+}
+.faq-item .q {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.faq-item .a {
+  margin: 0;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .attributes {
+    flex-direction: column;
+  }
+  .hero-img {
+    height: 200px;
+  }
+  .sticky-nav {
+    top: 50px;
+  }
+}
