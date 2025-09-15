@@ -221,7 +221,7 @@
       const relHTML = related.map(t => `
         <article class="card">
           ${t.logo ? `<img class="logo" src="${esc(t.logo)}" alt="${esc(t.name)} logo" loading="lazy" />` : `<div class="logo">${esc((t.name||'').split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase())}</div>`}
-          <div style="flex:1">
+          <div>
             <div class="title">
               <h3 style="margin:0;font-size:1rem">${esc(t.name)}</h3>
               <span class="right">${pricingBadge(t.pricing)}</span>
