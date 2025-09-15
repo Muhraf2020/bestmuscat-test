@@ -565,7 +565,7 @@ img.logo {
 
 .hero-card {
   width: 100%;
-  max-width: 980px;
+  max-width: var(--maxw); /* aligns with .wrap */
   background: #0b2a57;            /* deep navy */
   color: #fff;
   border-radius: 28px;
