@@ -1099,6 +1099,7 @@ img.logo {
 /* Layout for the Best Things buttons row */
 .best-things .tabs {
   margin-top: 12px;
+  margin-bottom: 16px; /* add space below the buttons */
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
